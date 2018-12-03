@@ -1,0 +1,17 @@
+{
+  "name": "bethlehem",
+  "version": "1.0.0",
+  "description": "Light show system for the Raspberry Pi",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Greg Brisebois",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^1.18.7"
+  },
+  "dependencies": {
+    "play-sound": "^1.1.2"
+  }
+}
