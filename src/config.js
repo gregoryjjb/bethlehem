@@ -8,7 +8,7 @@ const defaultConfig = {
     invertPinOutput: false,
 };
 
-const configPath = path.resolve('../data/config.json');
+const configPath = path.resolve('data/config.json');
 
 let config = null;
 
