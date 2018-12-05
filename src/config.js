@@ -4,6 +4,7 @@ const { clone } = require('./utils');
 
 // Defaults
 const defaultConfig = {
+    port: 1225,
     gpioPinNumbers: [ 5, 17, 18, 27, 22, 23, 24, 25 ],
     invertPinOutput: false,
 };

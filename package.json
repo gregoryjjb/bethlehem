@@ -12,10 +12,5 @@
   "devDependencies": {
     "nodemon": "^1.18.7"
   },
-  "dependencies": {
-    "audio-loader": "^1.0.3",
-    "audio-play": "^2.2.1",
-    "play-sound": "^1.1.2",
-    "speaker": "^0.4.1"
-  }
+  "dependencies": {}
 }

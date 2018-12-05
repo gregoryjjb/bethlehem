@@ -2,11 +2,6 @@ const path = require('path');
 const fs = require('fs');
 const { sleep } = require('./utils');
 
-//const audio = require('play-sound')(opts = {})
-const play = require('audio-play');
-const load = require('audio-loader');
-const speaker = require('speaker');
-
 console.log("Starting player process");
 
 // Flags
@@ -31,17 +26,6 @@ const loadShow = (filename) => {
 
 const playShow = async (showName) => {
     const showLines = loadShow(showName + '.txt').map(s => s.split(','));
-    
-    //audio.play(path.resolve('data', 'default.mp3'), err => console.log(err));
-    const promisified = () => {
-        return new Promise((res, rej) => {
-            load(path.resolve('data', 'default.mp3')).then(buffer => res(buffer));
-        })
-    }
-    
-    const buff = await promisified();
-    const playback = play(buff, {context: speaker});
-    playback.play();
     
     let i = 0;
     const start = Date.now();
