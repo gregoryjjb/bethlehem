@@ -12,10 +12,9 @@ async function main() {
         //console.log('starting server loop');
         //await sleep(750 + Math.random() * 1000);
         await sleep(2000);
-    //    playerProc.send('PLAY');
-    //    await sleep(750 + Math.random() * 1000);
-    console.log("Sending stop");
-        playerProc.send('STOP');
+        playerProc.send('PLAY');
+        await sleep(2000);
+        //playerProc.send('STOP');
     //}
 }
 
