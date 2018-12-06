@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const models = require('../models');
 const validation = require('../validation');
@@ -18,6 +19,16 @@ router.post('/', validation.createShow, async (req, res) => {
     const show = await models.Show.create({ name, displayName });
     
     res.json({ show });
+})
+
+router.get('/:show/audio', async (req, res) => {
+    
+    res.sendFile(path.resolve('data', 'audio', `${req.params.show}.mp3`));
+});
+
+router.get('/:show/project', async (req, res) => {
+    
+    
 })
 
 module.exports = router;
