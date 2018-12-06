@@ -4,7 +4,7 @@
   "description": "Light show system for the Raspberry Pi",
   "main": "index.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "nodemon src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Greg Brisebois",
@@ -12,5 +12,11 @@
   "devDependencies": {
     "nodemon": "^1.18.7"
   },
-  "dependencies": {}
+  "dependencies": {
+    "express": "^4.16.4",
+    "express-validation": "^1.0.2",
+    "joi": "^14.3.0",
+    "sequelize": "^4.41.2",
+    "sqlite3": "^4.0.4"
+  }
 }
