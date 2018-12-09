@@ -15,12 +15,20 @@ const port = process.env.PORT || config.get().port || 1225;
 
 const server = http.createServer(app);
 
-models.sequelize
-    .sync({ force: false })
-    .then(() => {
+const main = async () => {
+    
+    try {
+        await models.sequelize.sync({ force: true });
+        
+        await data.updateDatabaseFromFolders();
+        
         server.listen(port);
-        console.log("Server listening on", port);
-    })
-    .catch(err => {
+        console.log('Server listening on port', port);
+    }
+    catch(err) {
         console.error("Error syncing database:", err.message);
-    })
+    }
+    
+}
+
+main();
