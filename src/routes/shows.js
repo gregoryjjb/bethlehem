@@ -4,6 +4,7 @@ const express = require('express');
 const fileUpload = require('express-fileupload');
 const models = require('../models');
 const validation = require('../validation');
+const data = require('../data');
 
 const router = express.Router();
 
@@ -35,6 +36,9 @@ router.post('/', validation.createShow, async (req, res) => {
         if(existingShow) {
             return res.status(400).json({ error: `show of name '${name}' already exists` });
         }
+        
+        // Create project json
+        fs.writeFileSync(path.resolve('data', 'projects', name + '.json'), '{}');
         
         // Create and return show
         const show = await models.Show.create({ name, displayName, hasAudio: false });
@@ -69,7 +73,11 @@ router.route('/:show')
     })
     
     .delete(async (req, res) => {
+        const name = req.show.name;
+        data.deleteShowFiles(name);
+        
         req.show.destroy();
+        
         return res.status(204).end();
     })
     

@@ -18,7 +18,7 @@ const server = http.createServer(app);
 const main = async () => {
     
     try {
-        await models.sequelize.sync({ force: true });
+        await models.sequelize.sync({ force: false, alter: true });
         
         await data.updateDatabaseFromFolders();
         

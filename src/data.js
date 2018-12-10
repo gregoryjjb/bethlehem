@@ -61,10 +61,24 @@ const updateDatabaseFromFolders = async () => {
         catch(err) {
             console.error('Error updating DB from folders:', err.message);
         }
+    }    
+}
+
+const deleteIfExists = (file) => {
+    if(fs.existsSync(file)) {
+        fs.unlinkSync(file);
     }
+}
+
+const deleteShowFiles = (name) => {
+    const audio = path.resolve(audioDir, name + '.mp3');
+    const project = path.resolve(projectDir, name + '.json');
+    const show = path.resolve(showDir, name + '.txt');
     
+    [audio, project, show].forEach(deleteIfExists);
 }
 
 module.exports = {
     updateDatabaseFromFolders,
+    deleteShowFiles,
 };
