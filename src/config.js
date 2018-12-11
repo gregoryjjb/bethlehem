@@ -13,6 +13,19 @@ const configPath = path.resolve('data/config.json');
 
 let config = null;
 
+/**
+ * Get the current configuration
+ */
+get = () => clone(config);
+
+/**
+ * Write a new configuration
+ */
+save = (newConfig) => {
+    config = clone(newConfig);
+    fs.writeFileSync(configPath, JSON.stringify(config));
+}
+
 // Load config
 if(fs.existsSync(configPath)) {
     let configContents = fs.readFileSync(configPath);
@@ -20,17 +33,10 @@ if(fs.existsSync(configPath)) {
 }
 else {
     config = clone(defaultConfig);
+    save(config);
 }
 
-/**
- * Get the current configuration
- */
-module.exports.get = () => clone(config);
-
-/**
- * Write a new configuration
- */
-module.exports.save = (newConfig) => {
-    config = clone(newConfig);
-    fs.writeFileSync(configPath, JSON.stringify(config));
-}
+module.exports = {
+    get,
+    save,
+};

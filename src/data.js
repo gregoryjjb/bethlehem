@@ -8,6 +8,10 @@ const audioDir = path.resolve('data', 'audio');
 const projectDir = path.resolve('data', 'projects');
 const showDir = path.resolve('data', 'shows');
 
+const audioPath = name => path.resolve(audioDir, name + '.mp3');
+const projectPath = name => path.resolve(projectDir, name + '.json');
+const showPath = name => path.resolve(showDir, name + '.txt');
+
 // Create folders if they don't exist
 [dataDir, audioDir, projectDir, showDir].forEach(dir => {
     if(!fs.existsSync(dir)) fs.mkdirSync(dir);
@@ -78,7 +82,17 @@ const deleteShowFiles = (name) => {
     [audio, project, show].forEach(deleteIfExists);
 }
 
+const isPlayable = name => {
+    if(!name) return;
+    
+    return fs.existsSync(audioPath(name)) && fs.existsSync(showPath(name));
+}
+
 module.exports = {
+    audioPath,
+    showPath,
+    projectPath,
     updateDatabaseFromFolders,
     deleteShowFiles,
+    isPlayable,
 };
