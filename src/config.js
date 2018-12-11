@@ -8,6 +8,8 @@ const defaultConfig = {
     gpioPinNumbers: [ 5, 17, 18, 27, 22, 23, 24, 25 ],
     invertPinOutput: false,
     useBoardPinNumbering: false,
+    gpioLogging: true,
+    interShowDelay: 5,
 };
 
 // Types
@@ -16,6 +18,8 @@ const configShape = {
     gpioPinNumbers: 'array<number>',
     invertPinOutput: 'boolean',
     useBoardPinNumbering: 'boolean',
+    gpioLogging: 'boolean',
+    interShowDelay: 'number',
 };
 
 const configPath = path.resolve('data/config.json');

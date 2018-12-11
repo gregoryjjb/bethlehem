@@ -6,6 +6,8 @@ module.exports.sleep = (ms) => {
     });
 }
 
+module.exports.clamp = (n, min, max) => Math.min(max, Math.max(min, n));
+
 const checkType = (val, type) => {
     
     if(typeof type !== 'string') return false;

@@ -11,6 +11,7 @@ ON = GPIO.HIGH
 OFF = GPIO.LOW
 mode = GPIO.BCM
 pins = [5,17,18,27,22,23,24,25]  #4, 17, 27, 22, 5, 6, 13, 26]
+logging = True
 
 try:
     # Load JSON config
@@ -26,12 +27,14 @@ try:
         # BCM/Board
         if config['useBoardPinNumbering']:
             mode = GPIO.BOARD
+        logging = config['gpioLogging']
 except:
     print('No config file found, using defaults')
 
 print('Pins: ' + str(pins))
-print('On/off: ' + str(GPIO.HIGH) + '/' + str(GPIO.LOW))
+print('On/off: ' + str(ON) + '/' + str(OFF))
 print('Mode: ' + str(mode))
+print('Logging: ' + str(logging))
 
 GPIO.setwarnings(False) # REMOVE IF YOU HAVE TO TROUBLESHOOT
 GPIO.setmode(GPIO.BCM)
@@ -40,11 +43,10 @@ for pin in pins:
     GPIO.setup(pin, GPIO.OUT)
     GPIO.output(pin, OFF)
 
-#led = LED(4)
-
 def execute_pinout(states):
     int_states = [int(numeric_string) for numeric_string in states]
-    #print(str(int_states))
+    if logging:
+        print(' '.join(str(x) for x in list(map(lambda el: ' ' if el == 0 else 'X', int_states))))
     max_range = min(len(pins), len(states))
     for i in range(0, max_range):
         if int_states[i] == 0:
@@ -76,9 +78,7 @@ def play_show(audio_path, show_path):
     RUN_TIME = 0.0
     
     while True:
-        PREV_TIME = RUN_TIME
         RUN_TIME = time.time() - START_TIME
-        DELTA_TIME = RUN_TIME - PREV_TIME
         
         frame = event_raw[next_frame]
         elements = frame.split(',')

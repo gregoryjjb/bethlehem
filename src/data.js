@@ -88,6 +88,12 @@ const isPlayable = name => {
     return fs.existsSync(audioPath(name)) && fs.existsSync(showPath(name));
 }
 
+const getPlayableShows = () => {
+    const showFiles = fs.readdirSync(showDir);
+    
+    return showFiles.map(f => f.replace(/\.[^.]*$/g, '')).filter(n => isPlayable(n));
+}
+
 module.exports = {
     audioPath,
     showPath,
@@ -95,4 +101,5 @@ module.exports = {
     updateDatabaseFromFolders,
     deleteShowFiles,
     isPlayable,
+    getPlayableShows,
 };
