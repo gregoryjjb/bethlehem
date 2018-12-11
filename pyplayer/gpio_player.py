@@ -3,19 +3,35 @@ import json
 from pygame import mixer
 try:
     import RPi.GPIO as GPIO
-except ImportError, e:
+except:
     print('No RPi module found, using placeholder')
     import rpi_placeholder as GPIO
 
-with open('../../data/config.json') as f:
-    config = json.load(f)
-
-print('Using pins ' + str(config['gpioPinNumbers']))
-
 ON = GPIO.HIGH
 OFF = GPIO.LOW
-
+mode = GPIO.BCM
 pins = [5,17,18,27,22,23,24,25]  #4, 17, 27, 22, 5, 6, 13, 26]
+
+try:
+    # Load JSON config
+    with open('../data/config.json') as f:
+        print('Config file found, loading')
+        config = json.load(f)
+        # Pin numbers
+        pins = config['gpioPinNumbers']
+        # Inverted output
+        if config['invertPinOutput']:
+            ON = GPIO.LOW
+            OFF = GPIO.HIGH
+        # BCM/Board
+        if config['useBoardPinNumbering']:
+            mode = GPIO.BOARD
+except:
+    print('No config file found, using defaults')
+
+print('Pins: ' + str(pins))
+print('On/off: ' + str(GPIO.HIGH) + '/' + str(GPIO.LOW))
+print('Mode: ' + str(mode))
 
 GPIO.setwarnings(False) # REMOVE IF YOU HAVE TO TROUBLESHOOT
 GPIO.setmode(GPIO.BCM)

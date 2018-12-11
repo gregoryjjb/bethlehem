@@ -1,2 +1,9 @@
+# Show player data (audio files, database, etc)
 data/
+
+# Node Modules
 node_modules/
+
+# Python
+*.pyc
+**/__pycache__

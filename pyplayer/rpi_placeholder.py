@@ -6,14 +6,16 @@ LOW = 0
 BCM = 0
 
 def setmode(a):
-    print a
+    return
+    
 def setup(a, b):
-    print a
+    return
+    
 def output(a, b):
-    print a
+    return
+    
 def cleanup():
-    print 'a'
-def setmode(a):
-    print a
+    return
+    
 def setwarnings(flag):
-    print 'False'
+    return
