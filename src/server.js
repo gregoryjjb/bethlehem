@@ -26,7 +26,7 @@ const main = async () => {
         console.log('Server listening on port', port);
     }
     catch(err) {
-        console.error("Error syncing database:", err.message);
+        console.error("Error syncing database:", err);
     }
     
 }
