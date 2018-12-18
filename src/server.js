@@ -1,10 +1,14 @@
 const data = require('./data');
 const http = require('http');
-const config = require('./config');
 const express = require('express');
+const socketio = require('socket.io');
+
+const config = require('./config');
 const api = require('./routes/api');
 
 const models = require('./models');
+
+const player = require('./player');
 
 const app = express();
 app.use(express.json());
@@ -14,6 +18,24 @@ app.get('/', (req, res) => res.send("What"))
 const port = process.env.PORT || config.get().port || 1225;
 
 const server = http.createServer(app);
+
+const io = socketio(server);
+
+io.on('connection', socket => {
+    console.log('A user connected!');
+    
+    socket.emit('status_update', player.getStatus());
+    
+    const statusChanged = status => {
+        socket.emit('status_update', status);
+    }
+    
+    player.addStatusListener(statusChanged);
+    
+    socket.on('disconnect', () => {
+        player.removeStatusListener(statusChanged);
+    })
+});
 
 const main = async () => {
     

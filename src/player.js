@@ -4,12 +4,46 @@ const data = require('./data');
 const config = require('./config');
 const { clamp } = require('./utils');
 
-function mySpawn() {
-    console.log('spawn called');
-    console.log(arguments);
-    var result = childProcess.spawn.apply(this, arguments);
-    return result;
+////////////////////////////////
+// Status Handling
+
+let status = 'Off';
+
+const statusListeners = [];
+
+const getStatus = () => status;
+
+const statusChanged = () => {
+    for(let f of statusListeners) {
+        if(typeof f === 'function') {
+            f(status);
+        }
+    }
 }
+
+const setStatus = {
+    on: () => { status = 'On'; statusChanged(); },
+    off: () => { status = 'Off'; statusChanged(); },
+    upNext: show => { status = `Up next: ${show}`; statusChanged(); },
+    playing: show => { status = `Now playing: ${show}`; statusChanged(); },
+}
+
+const addStatusListener = func => {
+    if(typeof func !== 'function') return;
+    
+    statusListeners.push(func);
+}
+
+const removeStatusListener = func => {
+    const index = statusListeners.indexOf(func);
+    
+    if(index >= 0) {
+        statusListeners.splice(index, 1);
+    }
+}
+
+////////////////////////////////
+// Process Handling
 
 let playerProc = null;
 let timeout = null;
@@ -36,6 +70,8 @@ const killShow = () => {
         playerProc.kill('SIGTERM');
         console.log('PYTHON KILLED');
     }
+    
+    setStatus.on();
 }
 
 const killPlaylist = () => {
@@ -46,6 +82,8 @@ const killPlaylist = () => {
 const killTimeout = () => {
     clearTimeout(timeout);
     timeout = null;
+    
+    setStatus.on();
 }
 
 const killAll = () => {
@@ -75,6 +113,7 @@ const playShow = name => {
             console.log('SPAWNING PYTHON');
             playerProc = childProcess.spawn(cmd, args, { cwd: dir, stdio: 'inherit' });
             playerProc.on('close', showEnded);
+            setStatus.playing(name);
         }
         catch(err) {
             console.error('Major bo-bo trying to play', err);
@@ -103,10 +142,12 @@ const showEnded = (code, signal) => {
 
 const setNextTimeout = () => {
     killTimeout(); // Just in case
+    const next = getNextShow();
     
     if(next !== null) {
         const interShowTime = Math.max(config.get().interShowDelay * 1000, 1);
         timeout = setTimeout(() => playNext(), interShowTime);
+        setStatus.upNext(next);
     }
 }
 
@@ -121,6 +162,9 @@ const playNext = () => {
         playShow(next);
     }
 }
+
+////////////////////////////////
+// "User-Facing" Controls
 
 const playAll = () => {
     killAll();
@@ -149,8 +193,11 @@ const next = () => {
 }
 
 module.exports = {
+    addStatusListener,
+    removeStatusListener,
     play,
     playAll,
     stop,
     next,
+    getStatus,
 };
