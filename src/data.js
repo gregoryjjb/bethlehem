@@ -18,47 +18,51 @@ const showPath = name => path.resolve(showDir, name + '.txt');
 });
 
 const updateDatabaseFromFolders = async () => {
-    
     console.log('Updating database from folders');
     
+    const shows = fs.readdirSync(showDir);
     const projects = fs.readdirSync(projectDir);
     const audios = fs.readdirSync(audioDir);
     
-    for(let filename of projects) {
-        
-        const name = filename.replace(/\.[^.]*$/g, '');
-        const ext = path.extname(filename);
-        
-        console.log('  Checking', name);
-        
-        if(ext !== '.json') return;
+    const showNames = shows
+        .filter(f => path.extname(f) === '.txt')
+        .map(f => f.replace(/\.[^.]*$/g, ''))
+    
+    const projectNames = projects
+        .filter(f => path.extname(f) === '.json')
+        .map(f => f.replace(/\.[^.]*$/g, ''))
+    
+    const names = [...showNames, ...projectNames];
+    
+    //console.log('Show names:', showNames);
+    //console.log('Project names:', projectNames);
+    //console.log('Names:', names);
+    
+    for(let name of names) {
+        console.log('  ' + name);
         
         try {
             const existingShow = await models.Show.findOne({ where: { name } });
             
-            if(existingShow && existingShow.hasAudio) {
-                console.log('    Show already exists with audio');
-            }
-            else if(existingShow && !existingShow.hasAudio) {
-                let hasAudio = audios.includes(name + '.mp3');
+            let hasAudio = audios.includes(name + '.mp3');
+            let hasSource = projectNames.includes(name);
+            
+            if(existingShow) {
+                console.log(`    Exists in DB; audio: ${hasAudio}, source: ${hasSource}`);
                 
-                if(hasAudio) {
-                    console.log('    Updating with newfound audio');
-                    await existingShow.update({ hasAudio: true });
-                }
-                else {
-                    console.log('    Show exists, no new audio found');
-                }
+                await existingShow.update({
+                    hasAudio,
+                    hasSource,
+                });
             }
             else {
-                console.log('    Show does not exist in database, creating');
-                
-                let hasAudio = audios.includes(name + '.mp3');
+                console.log(`    Does not exist in DB, creating; audio: ${hasAudio}, source: ${hasSource}`);
                 
                 await models.Show.create({
                     name,
                     displayName: name,
                     hasAudio,
+                    hasSource,
                 });
             }
         }
