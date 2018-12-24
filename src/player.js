@@ -1,5 +1,6 @@
 const childProcess = require('child_process');
 const path = require('path');
+const models = require('./models');
 const data = require('./data');
 const config = require('./config');
 const { clamp } = require('./utils');
@@ -7,7 +8,7 @@ const { clamp } = require('./utils');
 ////////////////////////////////
 // Status Handling
 
-let status = 'Off';
+let status = 'off';
 
 const statusListeners = [];
 
@@ -22,10 +23,10 @@ const statusChanged = () => {
 }
 
 const setStatus = {
-    on: () => { status = 'On'; statusChanged(); },
-    off: () => { status = 'Off'; statusChanged(); },
-    upNext: show => { status = `Up next: ${show}`; statusChanged(); },
-    playing: show => { status = `Now playing: ${show}`; statusChanged(); },
+    on: () => { status = 'on'; statusChanged(); },
+    off: () => { status = 'off'; statusChanged(); },
+    upNext: show => { status = `next:${show}`; statusChanged(); },
+    playing: show => { status = `playing: ${show}`; statusChanged(); },
 }
 
 const addStatusListener = func => {
@@ -113,7 +114,16 @@ const playShow = name => {
             console.log('SPAWNING PYTHON');
             playerProc = childProcess.spawn(cmd, args, { cwd: dir, stdio: 'inherit' });
             playerProc.on('close', showEnded);
+            
             setStatus.playing(name);
+            
+            //models.Show.findOne({ where: { name } })
+            //    .then(show => {
+            //        setStatus.playing(show.displayName);
+            //    })
+            //    .catch(err => {
+            //        setStatus.playing(name);
+            //    })
         }
         catch(err) {
             console.error('Major bo-bo trying to play', err);
@@ -166,11 +176,19 @@ const playNext = () => {
 ////////////////////////////////
 // "User-Facing" Controls
 
-const playAll = () => {
+const playAll = async () => {
     killAll();
     
     playlist = data.getPlayableShows();
-    if(playlist.length === 0) return;
+    
+    // Only play shows that have 'playInAll' set to true
+    const enabledShows = await models.Show.findAll({ where: { playInAll: true } });
+    playlist = playlist.filter(name => enabledShows.find(show => show.name === name));
+    
+    if(playlist.length === 0) {
+        console.log('Attempted to play all but no playable shows found');
+        return;
+    };
     
     playlistPointer = 0;
     

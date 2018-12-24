@@ -72,6 +72,21 @@ router.route('/:show')
         return res.json(req.show);
     })
     
+    .put(async (req, res) => {
+        const { displayName, playInAll } = req.body;
+        
+        const existing = await models.Show.findOne({ where: { displayName } });
+        
+        if(existing && existing.id !== req.show.id) {
+            res.status(400).json({ error: 'Show already exists with that name' });
+        }
+        else {
+            await req.show.update({ displayName, playInAll });
+            
+            res.end();
+        }
+    })
+    
     .delete(async (req, res) => {
         const name = req.show.name;
         data.deleteShowFiles(name);
