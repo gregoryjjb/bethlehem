@@ -37,11 +37,29 @@ router.post('/', validation.createShow, async (req, res) => {
             return res.status(400).json({ error: `show of name '${name}' already exists` });
         }
         
+        const tracks = [];
+        for(let i = 0; i < 8; i++) {
+            tracks[i] = {
+                id: i,
+                keyframes: [],
+            }
+        }
+        
+        const blankSource = JSON.stringify({
+            projectData: {},
+            tracks,
+        });
+        
         // Create project json
-        fs.writeFileSync(path.resolve('data', 'projects', name + '.json'), '{}');
+        fs.writeFileSync(path.resolve('data', 'projects', name + '.json'), blankSource);
         
         // Create and return show
-        const show = await models.Show.create({ name, displayName, hasAudio: false });
+        const show = await models.Show.create({
+            name,
+            displayName,
+            hasAudio: false,
+            hasSource: true,
+        });
         res.json({ show });
     }
     catch(err) {
@@ -146,6 +164,27 @@ router.route('/:show/project')
         else {
             return res.status(404).json({ error: 'no project exists for show' });
         }
+    })
+    
+    .post((req, res) => {
+        const { project } = req.body;
+        
+        if(!project) {
+            return res.status(400).json({ error: 'no project sent' });
+        }
+        
+        if(!project.tracks) {
+            return res.status(400).json({ error: 'project has no tracks' });
+        }
+        
+        const newProject = {
+            projectData: project.projectData,
+            tracks: project.tracks,
+        };
+        
+        fs.writeFileSync(path.resolve('data', 'projects', req.show.name + '.json'), JSON.stringify(newProject));
+        
+        res.end();
     })
 
 module.exports = router;

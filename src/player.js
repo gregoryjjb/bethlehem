@@ -26,7 +26,7 @@ const setStatus = {
     on: () => { status = 'on'; statusChanged(); },
     off: () => { status = 'off'; statusChanged(); },
     upNext: show => { status = `next:${show}`; statusChanged(); },
-    playing: show => { status = `playing: ${show}`; statusChanged(); },
+    playing: show => { status = `playing:${show}`; statusChanged(); },
 }
 
 const addStatusListener = func => {
