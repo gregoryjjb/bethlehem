@@ -9,6 +9,9 @@ const api = require('./routes/api');
 const models = require('./models');
 
 const player = require('./player');
+const timer = require('./timer');
+
+timer.updateJobs();
 
 const app = express();
 app.use(express.json());

@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+//const timer = require('./timer');
 const { clone, checkType } = require('./utils');
 
 // Defaults
@@ -10,6 +11,9 @@ const defaultConfig = {
     useBoardPinNumbering: false,
     gpioLogging: true,
     interShowDelay: 5,
+    autoStart: false,
+    autoStartTime: 1020, // 5 PM
+    autoEndTime: 0, // Midnight
 };
 
 // Types
@@ -20,6 +24,9 @@ const configShape = {
     useBoardPinNumbering: 'boolean',
     gpioLogging: 'boolean',
     interShowDelay: 'number',
+    autoStart: 'boolean',
+    autoStartTime: 'number',
+    autoEndTime: 'number',
 };
 
 const configPath = path.resolve('data/config.json');
@@ -83,6 +90,7 @@ save = (newConfig) => {
         ...checkConfig(newConfig),
     });
     writeConfig();
+    //timer.updateJobs();
 }
 
 module.exports = {
