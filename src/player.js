@@ -94,17 +94,17 @@ const killAll = () => {
 }
 
 const setAll = state => {
-    state = (state === 1) ? 1 : 0;
+    state = (state === 1) ? '1' : '0';
     
     const args = [
         'python',
         'setall.py',
-        toString(state),
+        state,
     ].join(' ');
     
-    childProcess.execSync(args, { cwd: path.resolve('pyplayer') });
-    
-    if(state === 1) setStatus.on();
+    const out = childProcess.execSync(args, { cwd: path.resolve('pyplayer'), stdio: 'inherit' });
+	
+    if(state === '1') setStatus.on();
     else setStatus.off();
 }
 
