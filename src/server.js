@@ -1,5 +1,6 @@
 const data = require('./data');
 const http = require('http');
+const path = require('path');
 const express = require('express');
 const socketio = require('socket.io');
 
@@ -16,7 +17,8 @@ timer.updateJobs();
 const app = express();
 app.use(express.json());
 app.use('/api', api);
-app.get('/', (req, res) => res.send("What"))
+app.get('/', (req, res) => res.sendFile(path.resolve('www', 'index.html')));
+app.use(express.static('www'));
 
 const port = process.env.PORT || config.get().port || 1225;
 

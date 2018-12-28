@@ -1,6 +1,9 @@
 # Show player data (audio files, database, etc)
 data/
 
+# Front end
+www/
+
 # Node Modules
 node_modules/
 

@@ -93,6 +93,31 @@ const killAll = () => {
     killShow();
 }
 
+const setAll = state => {
+    state = (state === 1) ? 1 : 0;
+    
+    const args = [
+        'python',
+        'setall.py',
+        toString(state),
+    ].join(' ');
+    
+    childProcess.execSync(args, { cwd: path.resolve('pyplayer') });
+    
+    if(state === 1) setStatus.on();
+    else setStatus.off();
+}
+
+const lightsOn = () => {
+    killAll();
+    setAll(1);
+}
+
+const lightsOff = () => {
+    killAll();
+    setAll(0);
+}
+
 const playShow = name => {
     timeout = null;
     
@@ -201,7 +226,8 @@ const play = (name) => {
 }
 
 const stop = () => {
-    killAll();
+    //killAll();
+    lightsOn();
 }
 
 const next = () => {
@@ -213,6 +239,8 @@ const next = () => {
 module.exports = {
     addStatusListener,
     removeStatusListener,
+    lightsOn,
+    lightsOff,
     play,
     playAll,
     stop,

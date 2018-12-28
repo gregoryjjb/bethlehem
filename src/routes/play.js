@@ -21,6 +21,16 @@ play.get('/all', (req, res) => {
     res.send('Should be playing all...');
 });
 
+play.get('/lightson', (req, res) => {
+    player.lightsOn();
+    res.end();
+})
+
+play.get('/lightsoff', (req, res) => {
+    player.lightsOff();
+    res.end();
+})
+
 play.get('/single/:name', (req, res) => {
     const { name } = req.params;
     
