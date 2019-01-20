@@ -98,6 +98,107 @@ const getPlayableShows = () => {
     return showFiles.map(f => f.replace(/\.[^.]*$/g, '')).filter(n => isPlayable(n));
 }
 
+// KEYFRAME FUNCTIONS
+function isInside(n, a, b) {
+
+	let greater = Math.max(a, b);
+	let lesser = Math.min(a, b);
+
+	return (n <= greater && n >= lesser);
+}
+
+function isCloseTo(a, b, delta) {
+	return isInside(a, b-delta, b+delta);
+}
+
+const saveProject = (name, project) => {
+    const { tracks } = project;
+    
+    // Classes
+    const Group = time => ({
+        time: time,
+        keyframes: [],
+    })
+    const CrossTrackKeyframe = time => ({
+        time: time,
+        values: new Array(tracks.length),
+    })
+    
+    if(!tracks || !name || !Array.isArray(tracks)) return;
+    
+    // Merge and sort
+    const allKeyframes = tracks.map(t => t.keyframes).reduce((acc, v) => acc.concat(v), []);
+    allKeyframes.sort((a, b) => a.time - b.time);
+    
+    // Group
+    const grouped = [];
+    let current = Group(0);
+    
+    for(let i = 0; i < allKeyframes.length; i++) {
+		
+		let k = allKeyframes[i];
+		let t = current.time;
+		
+		// If this keyframe is the same time as the last keyframe
+		if(isCloseTo(k.time, t, 0.01)) {
+			current.keyframes.push(k);
+		}
+		// If it's a new time
+		else {
+			let newGroup = JSON.parse(JSON.stringify(current));
+			grouped.push(newGroup);
+			current = Group(k.time);
+			current.keyframes.push(k);
+		}
+    }
+    
+    // Push last set of keyframes
+    grouped.push(current);
+    
+    const finalKeyframes = [];
+    
+    for(let i = 0; i < grouped.length; i++) {
+		let g = grouped[i];
+		
+		// Initialize new frame
+		let newFrame = CrossTrackKeyframe(g.time);
+		
+		// Get previous keyframe
+		let prevFrame = (i == 0) ? null : finalKeyframes[i - 1];
+		
+		// Fill values with known new values
+		for(let k = 0; k < g.keyframes.length; k++) {
+			let channel = g.keyframes[k].channel;
+			newFrame.values[channel] = (g.keyframes[k].state) ? 1 : 0;
+			//console.log("Set ", channel, " to ", newFrame.values[channel]);
+		}
+		
+		// Fill empty values with previous frame's value
+		for(let v = 0; v < newFrame.values.length; v++) {
+			if(newFrame.values[v] == undefined) {
+				
+				if(prevFrame != null) {
+					newFrame.values[v] = prevFrame.values[v];
+				}
+				else {
+					newFrame.values[v] = 0;
+				}
+				
+			}
+		}
+		
+		finalKeyframes.push(newFrame);
+    }
+    
+    const stringKeyframes = finalKeyframes
+        .map(k => (
+            k.time + ',' + k.values.join(',')
+        ))
+        .join('\n');
+    
+    fs.writeFileSync(showPath(name), stringKeyframes);
+}
+
 module.exports = {
     audioPath,
     showPath,
@@ -106,4 +207,5 @@ module.exports = {
     deleteShowFiles,
     isPlayable,
     getPlayableShows,
+    saveProject,
 };

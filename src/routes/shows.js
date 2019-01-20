@@ -184,6 +184,8 @@ router.route('/:show/project')
         
         fs.writeFileSync(path.resolve('data', 'projects', req.show.name + '.json'), JSON.stringify(newProject));
         
+        data.saveProject(req.show.name, newProject);
+        
         res.end();
     })
 
