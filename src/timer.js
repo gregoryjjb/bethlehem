@@ -50,7 +50,7 @@ const startFunc = () => {
 }
 
 const endFunc = () => {
-    player.stop();
+    player.lightsOff();
 }
 
 module.exports = {
